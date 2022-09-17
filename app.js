@@ -9,12 +9,15 @@ conn.connect(function(err) {
 
 app.set('port', process.env.PORT || 4000);
 
-app.get('/pokemon/:generate', (req, res) => {
-    res.send(`generate: ${req.params.generate}`);
-});
-
-app.get('/generate', (req, res) => {
-    res.send('pokemon123');
+app.get('/pokemon', (req, res) => {
+    conn.query(`select * from pokemon`, (err,rows, fields) =>{
+        if(rows.length !== 0){
+            res.json(rows);
+        }
+        else{
+            res.json({ result : "fail"});
+        }
+    })
 });
 
 app.listen(app.get('port'), () => {
