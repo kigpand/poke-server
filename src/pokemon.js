@@ -4,7 +4,7 @@ const router = express.Router();
 const conn = require('../db/database');
 
 router.get('/', (req, res) => {
-    conn.query(`select * from pokemon`, (err,rows, fields) =>{
+    conn.query(`select * from pokemon group by name`, (err,rows, fields) =>{
         if(rows.length !== 0){
             res.json(rows);
         }
