@@ -6,7 +6,7 @@ const conn = require('../db/database');
 
 router.get('/', async (req, res) => {
     let values = [];
-    for (let i = 800; i < 899; i++) {
+    for (let i = 801; i < 899; i++) {
         await axios.get(`https://pokeapi.co/api/v2/pokemon/${i}`).then(async (e) => {
             const abilities = [];
             await Promise.all(
