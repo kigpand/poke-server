@@ -3,6 +3,7 @@ const cors = require('cors');
 const app = express();
 const conn = require('./db/database');
 
+const addRouter = require('./src/addPoke');
 const pokeRouter = require('./src/pokemon');
 const typeRouter = require('./src/types');
 
@@ -18,6 +19,7 @@ app.use(cors({
 
 app.set('port', process.env.PORT || 4000);
 
+app.use('/addPoke', addRouter);
 app.use('/pokemon', pokeRouter);
 app.use('/types', typeRouter);
 

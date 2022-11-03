@@ -4,9 +4,35 @@ const router = express.Router();
 
 const conn = require('../db/database');
 
-router.get('/', async (req, res) => {
+const countMap = {
+    '0': { start: 1, end: 50 },
+    '50': { start: 50, end: 100},
+    '100': { start: 100, end: 150},
+    '150': { start: 150, end: 200},
+    '200': { start: 200, end: 250},
+    '250': { start: 250, end: 300},
+    '300': { start: 300, end: 350},
+    '350': { start: 350, end: 400},
+    '400': { start: 400, end: 450},
+    '450': { start: 450, end: 500},
+    '500': { start: 500, end: 550},
+    '550': { start: 550, end: 600},
+    '600': { start: 600, end: 650},
+    '650': { start: 650, end: 700},
+    '700': { start: 700, end: 750},
+    '750': { start: 750, end: 800},
+    '800': { start: 800, end: 850},
+    '850': { start: 850, end: 899},
+}
+
+function getCount(count) {
+    return countMap[count];
+}
+
+router.get('/:count', async (req, res) => {
     let values = [];
-    for (let i = 801; i < 899; i++) {
+    const { start, end } = getCount(req.params.count);
+    for (let i = Number(start); i <= Number(end); i++) {
         await axios.get(`https://pokeapi.co/api/v2/pokemon/${i}`).then(async (e) => {
             const abilities = [];
             await Promise.all(
@@ -32,19 +58,23 @@ router.get('/', async (req, res) => {
         });
     }
 
-    const sql = 'INSERT INTO pokemon.pokemon(id, name, generate, imageUrl, states, abilities, pokeTypes, weight, height, genus, flavor) values ?';
-    conn.query(sql, [values], (err, rows, fields) => {
-        if (err) {
-            console.log(err);
-            res.json({
-                result: false,
-            })
-        } else {
-            res.json({
-                result: true
-            });
-        }
+    res.json({
+        result: values
     });
+
+    // const sql = 'INSERT INTO pokemon.pokemon(id, name, generate, imageUrl, states, abilities, pokeTypes, weight, height, genus, flavor) values ?';
+    // conn.query(sql, [values], (err, rows, fields) => {
+    //     if (err) {
+    //         console.log(err);
+    //         res.json({
+    //             result: false,
+    //         })
+    //     } else {
+    //         res.json({
+    //             result: true
+    //         });
+    //     }
+    // });
         // conn.query(`
         //     INSERT INTO 
         //     pokemon.pokemon(id, name, generate, imageUrl, states, abilities, pokeTypes, weight, height, genus, flavor) values 
