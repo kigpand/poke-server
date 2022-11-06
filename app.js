@@ -4,6 +4,7 @@ const app = express();
 const conn = require('./db/database');
 
 const addRouter = require('./src/addPoke');
+const addTypeRouter = require('./src/addType');
 const pokeRouter = require('./src/pokemon');
 const typeRouter = require('./src/types');
 
@@ -13,13 +14,14 @@ conn.connect(function(err) {
 });
 
 app.use(cors({
-    origin: ['http://localhost:3000'],
+    origin: ['http://localhost:3000', 'https://kigpand.github.io'],
     credentials: true,
 }));
 
 app.set('port', process.env.PORT || 4000);
 
 app.use('/addPoke', addRouter);
+app.use('/addTypeRouter', addTypeRouter);
 app.use('/pokemon', pokeRouter);
 app.use('/types', typeRouter);
 

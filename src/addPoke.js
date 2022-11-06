@@ -62,19 +62,19 @@ router.get('/:count', async (req, res) => {
         result: values
     });
 
-    // const sql = 'INSERT INTO pokemon.pokemon(id, name, generate, imageUrl, states, abilities, pokeTypes, weight, height, genus, flavor) values ?';
-    // conn.query(sql, [values], (err, rows, fields) => {
-    //     if (err) {
-    //         console.log(err);
-    //         res.json({
-    //             result: false,
-    //         })
-    //     } else {
-    //         res.json({
-    //             result: true
-    //         });
-    //     }
-    // });
+    const sql = 'INSERT INTO pokemon.pokemon(id, name, generate, imageUrl, states, abilities, pokeTypes, weight, height, genus, flavor) values ?';
+    conn.query(sql, [values], (err, rows, fields) => {
+        if (err) {
+            console.log(err);
+            res.json({
+                result: false,
+            })
+        } else {
+            res.json({
+                result: true
+            });
+        }
+    });
         // conn.query(`
         //     INSERT INTO 
         //     pokemon.pokemon(id, name, generate, imageUrl, states, abilities, pokeTypes, weight, height, genus, flavor) values 
