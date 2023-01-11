@@ -29,41 +29,25 @@ function getCount(count) {
     return countMap[count];
 }
 
-router.get('/:count', async (req, res) => {
-    let values = [];
-    const { start, end } = getCount(req.params.count);
-    for (let i = Number(start); i <= Number(end); i++) {
-        await axios.get(`https://pokeapi.co/api/v2/pokemon/${i}`).then(async (e) => {
-            const abilities = [];
-            await Promise.all(
-                e.data.abilities.map(async (ability) => {
-                    const ab = await getAbilities(ability.ability.url);
-                    abilities.push(ab);
-            }));
-    
-            const species = await getSpecies(e.data.species.url);
-            const imgUrl = e.data.sprites.front_default;
-            const stats = e.data.stats.map((stat) => {
-                return `${stat.stat.name}, ${stat.base_stat}`;
+router.get('/update/:name', async(req, res) => {
+    const sql = 'UPDATE pokemon.pokemon set imageUrl=? where id=?';
+    conn.query(sql, [`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${req.params.name}.png`, req.params.name], (err, rows, fields) => {
+        if (err) {
+            console.log(err);
+            res.json({
+                result: false,
+            })
+        } else {
+            res.json({
+                result: req.params.name
             });
-            const types = e.data.types.map((type) => {
-                return type.type.name;
-            });
-    
-            const weight = e.data.weight;
-            const height = e.data.height;
-            const id = e.data.id;
-
-            values.push([id, species.name, species.generation, imgUrl, stats.toString(), abilities.toString(), types.toString(), weight, height, species.genus ? species.genus : '', species.flavor ? species.flavor : '']);
-        });
-    }
-
-    res.json({
-        result: values
+        }
     });
+})
 
-    const sql = 'INSERT INTO pokemon.pokemon(id, name, generate, imageUrl, states, abilities, pokeTypes, weight, height, genus, flavor) values ?';
-    conn.query(sql, [values], (err, rows, fields) => {
+router.get('/:count', async(req, res) => {
+    const sql = 'UPDATE pokemon.pokemon set imageUrl=? where id=?';
+    conn.query(sql, [`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${req.params.count}.png`, req.params.count], (err, rows, fields) => {
         if (err) {
             console.log(err);
             res.json({
@@ -75,22 +59,70 @@ router.get('/:count', async (req, res) => {
             });
         }
     });
-        // conn.query(`
-        //     INSERT INTO 
-        //     pokemon.pokemon(id, name, generate, imageUrl, states, abilities, pokeTypes, weight, height, genus, flavor) values 
-        //     ("${id}", "${species.name}", "${species.generation}", "${imgUrl}", "${stats}", "${abilities}", "${types}", "${weight}", "${height}", "${species.genus}", "${species.flavor}")`, (err, rows, fields)=>{
-        //         if(err) {
-        //             console.log(err);
-        //             res.json({
-        //                 result : false,
-        //             })
-        //         }else{
-        //             res.json({
-        //                 result : true,
-        //             });
-        //         }
-        // });
-});
+})
+
+// router.get('/:count', async (req, res) => {
+//     let values = [];
+//     const { start, end } = getCount(req.params.count);
+//     for (let i = Number(start); i <= Number(end); i++) {
+//         await axios.get(`https://pokeapi.co/api/v2/pokemon/${i}`).then(async (e) => {
+//             const abilities = [];
+//             await Promise.all(
+//                 e.data.abilities.map(async (ability) => {
+//                     const ab = await getAbilities(ability.ability.url);
+//                     abilities.push(ab);
+//             }));
+    
+//             const species = await getSpecies(e.data.species.url);
+//             const imgUrl = e.data.sprites.front_default;
+//             const stats = e.data.stats.map((stat) => {
+//                 return `${stat.stat.name}, ${stat.base_stat}`;
+//             });
+//             const types = e.data.types.map((type) => {
+//                 return type.type.name;
+//             });
+    
+//             const weight = e.data.weight;
+//             const height = e.data.height;
+//             const id = e.data.id;
+
+//             values.push([id, species.name, species.generation, imgUrl, stats.toString(), abilities.toString(), types.toString(), weight, height, species.genus ? species.genus : '', species.flavor ? species.flavor : '']);
+//         });
+//     }
+
+//     res.json({
+//         result: values
+//     });
+
+//     const sql = 'INSERT INTO pokemon.pokemon(id, name, generate, imageUrl, states, abilities, pokeTypes, weight, height, genus, flavor) values ?';
+//     conn.query(sql, [values], (err, rows, fields) => {
+//         if (err) {
+//             console.log(err);
+//             res.json({
+//                 result: false,
+//             })
+//         } else {
+//             res.json({
+//                 result: true
+//             });
+//         }
+//     });
+//         // conn.query(`
+//         //     INSERT INTO 
+//         //     pokemon.pokemon(id, name, generate, imageUrl, states, abilities, pokeTypes, weight, height, genus, flavor) values 
+//         //     ("${id}", "${species.name}", "${species.generation}", "${imgUrl}", "${stats}", "${abilities}", "${types}", "${weight}", "${height}", "${species.genus}", "${species.flavor}")`, (err, rows, fields)=>{
+//         //         if(err) {
+//         //             console.log(err);
+//         //             res.json({
+//         //                 result : false,
+//         //             })
+//         //         }else{
+//         //             res.json({
+//         //                 result : true,
+//         //             });
+//         //         }
+//         // });
+// });
 
 async function getAbilities(url) {
     const name = await axios.get(url).then((e) => {
